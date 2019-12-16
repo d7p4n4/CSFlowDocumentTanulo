@@ -1,7 +1,10 @@
 ﻿
+using CSAc4yObjectObjectService.Association;
+using CSAc4yObjectObjectService.Object;
 using CSFlowDocumentTanulo;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -41,129 +44,8 @@ namespace CSFlowDocumentTry1
         }
 
         private void AddTextBox(object subject, RoutedEventArgs e)
-        { 
-            WrapPanel uiMainWrapPanel = new WrapPanel() {
-                Orientation = Orientation.Vertical,
-                Width = 750,
-                HorizontalAlignment = HorizontalAlignment.Center
-            };
-
-            WrapPanel uiInnerWrapPanel1 = new WrapPanel() {
-                Orientation = Orientation.Horizontal,
-                Margin = new Thickness()
-                {
-                    Top = 12,
-                    Left = 25
-                }
-            };
-
-            uiInnerWrapPanel1.Children.Add(
-                new Label() {
-                    Content = "Vezetéknév: ",
-                    Width = 100
-                });
-
-            uiInnerWrapPanel1.Children.Add(
-                new TextBox()
-                {
-                    Name = "uiTextBoxVezetekNev",
-                    Width = 250,
-                    Height = 25
-                });
-
-            uiInnerWrapPanel1.Children.Add(
-                new Label()
-                {
-                    Content = "Keresztnév: ",
-                    Width = 100
-                });
-
-            uiInnerWrapPanel1.Children.Add(
-                new TextBox()
-                {
-                    Name = "uiTextBoxKeresztNev",
-                    Width = 250,
-                    Height = 25
-                });
-
-            WrapPanel uiInnerWrapPanel2 = new WrapPanel() {
-                Orientation = Orientation.Horizontal,
-                Margin = new Thickness()
-                {
-                    Top = 12,
-                    Left = 25
-                }
-            };
-
-            uiInnerWrapPanel2.Children.Add(
-                new Label()
-                {
-                    Content = "Kor: ",
-                    Width = 100
-                });
-
-            uiInnerWrapPanel2.Children.Add(
-                new TextBox()
-                {
-                    Name = "uiTextBoxKor",
-                    Width = 250,
-                    Height = 25
-                });
-
-            uiInnerWrapPanel2.Children.Add(
-                new Label()
-                {
-                    Content = "Cím: ",
-                    Width = 100
-                });
-
-            uiInnerWrapPanel2.Children.Add(
-                new TextBox()
-                {
-                    Name = "uiTextBoxCim",
-                    Width = 250,
-                    Height = 25
-                });
-            BlockUIContainer uiContainer = new BlockUIContainer()
-            {
-                Child = uiMainWrapPanel,
-                BorderBrush = new SolidColorBrush(Color.FromRgb(0,0,0)),
-                BorderThickness = new Thickness()
-                {
-                    Bottom = 1,
-                    Left = 1,
-                    Top = 1,
-                    Right = 1
-                }
-                
-            };
-            Section sectionFromCode = new Section()
-            {
-                Background = new SolidColorBrush(Color.FromRgb(248, 248, 255)),
-                Name = "section" + i
-            };
-
-            Button uiTorlesButton = new Button()
-            {
-                Width = 200,
-                Content = "Törlés",
-                Tag = sectionFromCode.Name
-            };
-
-            uiTorlesButton.Click += deleteButton;
-
-            uiMainWrapPanel.Children.Add(uiInnerWrapPanel1);
-            uiMainWrapPanel.Children.Add(uiInnerWrapPanel2);
-            uiMainWrapPanel.Children.Add(uiTorlesButton);
-
-
-            sectionFromCode.Blocks.Add(uiContainer);
-            uiFlowDocument.Blocks.Add(sectionFromCode);
-
-            
-            TanuloDictionary.Add(sectionFromCode.Name, new Tanulo());
-
-            i++;
+        {
+            AddForm("", "", "", "");
         }
 
         private void ButtonAction(object subject, RoutedEventArgs e)
@@ -233,6 +115,9 @@ namespace CSFlowDocumentTry1
             }
 
             uiTextBlock.Text = serialize(tanuloKontener, typeof(TanuloKontener));
+
+            //UploadTanuloKontener(tanuloKontener);
+
             /*
             uiTextBoxName.Text = "";
             uiTextBoxAncestor.Text = "";
@@ -240,7 +125,234 @@ namespace CSFlowDocumentTry1
             uiTextBoxNamespace.Text = "";
             */
         }
+    
+        public void XmlBetoltes(object subject, RoutedEventArgs e)
+        {
+            List<Block> flowDocumentBlockList = uiFlowDocument.Blocks.ToList();
+            uiFlowDocument.Blocks.Clear();
 
+            foreach (var block in flowDocumentBlockList)
+            {
+                if (block.Name.Equals("section0"))
+                {
+                    uiFlowDocument.Blocks.Add(block);
+                }
+            }
+
+            TanuloDictionary.Clear();
+            tanuloKontener.TanuloLista.Clear();
+
+            string xml = uiTextBlock.Text;
+            TanuloKontener kontenerUj = deserialize(xml);
+            int x = 0;
+
+            foreach(var tanulo in kontenerUj.TanuloLista)
+            {
+                if (x == 0)
+                {
+                    uiTextBoxCim.Text = tanulo.Cim;
+                    uiTextBoxKeresztNev.Text = tanulo.Keresztnev;
+                    uiTextBoxKor.Text = tanulo.Kor;
+                    uiTextBoxVezetekNev.Text = tanulo.Vezeteknev;
+                    x++;
+                }
+                else
+                {
+                    AddForm(tanulo.Vezeteknev, tanulo.Keresztnev, tanulo.Kor, tanulo.Cim);
+                }
+            }
+        }
+
+        public void AddForm(string vNev, string kNev, string kor, string cim)
+        {
+            WrapPanel uiMainWrapPanel = new WrapPanel()
+            {
+                Orientation = Orientation.Vertical,
+                Width = 750,
+                HorizontalAlignment = HorizontalAlignment.Center
+            };
+
+            WrapPanel uiInnerWrapPanel1 = new WrapPanel()
+            {
+                Orientation = Orientation.Horizontal,
+                Margin = new Thickness()
+                {
+                    Top = 12,
+                    Left = 25
+                }
+            };
+
+            uiInnerWrapPanel1.Children.Add(
+                new Label()
+                {
+                    Content = "Vezetéknév: ",
+                    Width = 100
+                });
+
+            uiInnerWrapPanel1.Children.Add(
+                new TextBox()
+                {
+                    Name = "uiTextBoxVezetekNev",
+                    Width = 250,
+                    Height = 25,
+                    Text = vNev
+                });
+
+            uiInnerWrapPanel1.Children.Add(
+                new Label()
+                {
+                    Content = "Keresztnév: ",
+                    Width = 100
+                });
+
+            uiInnerWrapPanel1.Children.Add(
+                new TextBox()
+                {
+                    Name = "uiTextBoxKeresztNev",
+                    Width = 250,
+                    Height = 25,
+                    Text = kNev
+                });
+
+            WrapPanel uiInnerWrapPanel2 = new WrapPanel()
+            {
+                Orientation = Orientation.Horizontal,
+                Margin = new Thickness()
+                {
+                    Top = 12,
+                    Left = 25
+                }
+            };
+
+            uiInnerWrapPanel2.Children.Add(
+                new Label()
+                {
+                    Content = "Kor: ",
+                    Width = 100
+                });
+
+            uiInnerWrapPanel2.Children.Add(
+                new TextBox()
+                {
+                    Name = "uiTextBoxKor",
+                    Width = 250,
+                    Height = 25,
+                    Text = kor
+                });
+
+            uiInnerWrapPanel2.Children.Add(
+                new Label()
+                {
+                    Content = "Cím: ",
+                    Width = 100
+                });
+
+            uiInnerWrapPanel2.Children.Add(
+                new TextBox()
+                {
+                    Name = "uiTextBoxCim",
+                    Width = 250,
+                    Height = 25,
+                    Text = cim
+                });
+            BlockUIContainer uiContainer = new BlockUIContainer()
+            {
+                Child = uiMainWrapPanel,
+                BorderBrush = new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                BorderThickness = new Thickness()
+                {
+                    Bottom = 1,
+                    Left = 1,
+                    Top = 1,
+                    Right = 1
+                }
+
+            };
+            Section sectionFromCode = new Section()
+            {
+                Background = new SolidColorBrush(Color.FromRgb(248, 248, 255)),
+                Name = "section" + i
+            };
+
+            Button uiTorlesButton = new Button()
+            {
+                Width = 200,
+                Content = "Törlés",
+                Tag = sectionFromCode.Name
+            };
+
+            uiTorlesButton.Click += deleteButton;
+
+            uiMainWrapPanel.Children.Add(uiInnerWrapPanel1);
+            uiMainWrapPanel.Children.Add(uiInnerWrapPanel2);
+            uiMainWrapPanel.Children.Add(uiTorlesButton);
+
+
+            sectionFromCode.Blocks.Add(uiContainer);
+            uiFlowDocument.Blocks.Add(sectionFromCode);
+
+
+            TanuloDictionary.Add(sectionFromCode.Name, new Tanulo());
+
+            i++;
+        }
+        
+        public TanuloKontener deserialize(string xml)
+        {
+            TanuloKontener result = null;
+            XmlSerializer serializer = new XmlSerializer(typeof(TanuloKontener));
+            using (TextReader reader = new StringReader(xml))
+            {
+                result = (TanuloKontener)serializer.Deserialize(reader);
+            }
+            return result;
+        }
+
+        public void UploadTanuloKontener(TanuloKontener kontener)
+        {
+            SqlConnection sqlConnection = new SqlConnection("Data Source=80.211.241.82;Integrated Security=False;uid=root;pwd=Sycompla9999*;Initial Catalog=ModulDb;");
+
+            sqlConnection.Open();
+
+            SetByNamesResponse setByNamesResponse =
+                new Ac4yObjectObjectService(sqlConnection).SetByNames(
+                    new SetByNamesRequest() {
+                        TemplateName = "tanuló konténer",
+                        Name = "teszt"
+                    });
+
+            foreach(var tanulo in kontener.TanuloLista)
+            {
+                SetByNamesResponse setByNamesResponseTanulo =
+                    new Ac4yObjectObjectService(sqlConnection).SetByNames(
+                        new SetByNamesRequest()
+                        {
+                            TemplateName = "tanuló",
+                            Name = tanulo.Vezeteknev + "." + tanulo.Keresztnev,
+                        });
+            }
+
+            string xml = serialize(kontener, typeof(TanuloKontener));
+            string GUID = setByNamesResponse.Ac4yObject.GUID;
+        }
+
+        public void UploadKontenerTanuloAssociation(TanuloKontener kontener)
+        {
+            SqlConnection sqlConnection = new SqlConnection("Data Source=80.211.241.82;Integrated Security=False;uid=root;pwd=Sycompla9999*;Initial Catalog=ModulDb;");
+
+            foreach (var tanulo in kontener.TanuloLista) {
+                Ac4yAssociationObjectService.SetByNamesResponse setByNamesResponse =
+                    new Ac4yAssociationObjectService(sqlConnection).SetByNames(
+                        new Ac4yAssociationObjectService.SetByNamesRequest()
+                        {
+                            AssociationPathName = "tanuló konténer.tanuló",
+                            OriginTemplateName = "tanuló konténer",
+                            OriginName = "teszt",
+                            TargetTemplateName = "tanuló",
+                            TargetName = tanulo.Vezeteknev + "." + tanulo.Keresztnev
+                        });
+            }
+        }
 
         public string serialize(Object taroltEljaras, Type anyType)
         {
