@@ -4,6 +4,7 @@ using CSAc4yObjectObjectService.Object;
 using CSFlowDocumentTanulo;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
@@ -28,6 +29,8 @@ namespace CSFlowDocumentTry1
     /// </summary>
     public partial class MainWindow : Window
     {
+
+        public string APPSETTING_SQLCONNECTIONSTRING = ConfigurationManager.AppSettings["sqlConnectionString"];
         public Dictionary<string, Tanulo> TanuloDictionary = new Dictionary<string, Tanulo>();
         public TanuloKontener tanuloKontener = new TanuloKontener()
         {
@@ -116,7 +119,8 @@ namespace CSFlowDocumentTry1
 
             uiTextBlock.Text = serialize(tanuloKontener, typeof(TanuloKontener));
 
-            //UploadTanuloKontener(tanuloKontener);
+            UploadTanuloKontener(tanuloKontener);
+            UploadKontenerTanuloAssociation(tanuloKontener);
 
             /*
             uiTextBoxName.Text = "";
@@ -310,7 +314,7 @@ namespace CSFlowDocumentTry1
 
         public void UploadTanuloKontener(TanuloKontener kontener)
         {
-            SqlConnection sqlConnection = new SqlConnection("Data Source=80.211.241.82;Integrated Security=False;uid=root;pwd=Sycompla9999*;Initial Catalog=ModulDb;");
+            SqlConnection sqlConnection = new SqlConnection(APPSETTING_SQLCONNECTIONSTRING);
 
             sqlConnection.Open();
 
@@ -338,7 +342,7 @@ namespace CSFlowDocumentTry1
 
         public void UploadKontenerTanuloAssociation(TanuloKontener kontener)
         {
-            SqlConnection sqlConnection = new SqlConnection("Data Source=80.211.241.82;Integrated Security=False;uid=root;pwd=Sycompla9999*;Initial Catalog=ModulDb;");
+            SqlConnection sqlConnection = new SqlConnection(APPSETTING_SQLCONNECTIONSTRING);
 
             foreach (var tanulo in kontener.TanuloLista) {
                 Ac4yAssociationObjectService.SetByNamesResponse setByNamesResponse =
@@ -352,6 +356,14 @@ namespace CSFlowDocumentTry1
                             TargetName = tanulo.Vezeteknev + "." + tanulo.Keresztnev
                         });
             }
+        }
+
+        public void DeleteTanuloKontener(Tanulo tanulo)
+        {
+            SqlConnection connection = new SqlConnection(APPSETTING_SQLCONNECTIONSTRING);
+            connection.Open();
+
+            
         }
 
         public string serialize(Object taroltEljaras, Type anyType)
