@@ -175,6 +175,9 @@ namespace CSFlowDocumentTry1
                 }
             }
 
+            SectionSorszam = 1;
+            NyelvSorszam = 1;
+
             TanuloDictionary.Clear();
             tanuloKontener.TanuloLista.Clear();
 
@@ -182,22 +185,15 @@ namespace CSFlowDocumentTry1
             TanuloKontener kontenerUj = SerializeMethods.Deserialize(xml);
             int x = 0;
             if (kontenerUj != null)
-            {/*
+            {
                 foreach (var tanulo in kontenerUj.TanuloLista)
                 {
-                    if (x == 0)
+                    AddForm(tanulo.Vezeteknev, tanulo.Keresztnev, tanulo.Kor, tanulo.Cim);
+                    foreach(Nyelv nyelv in tanulo.NyelvList)
                     {
-                        uiTextBoxCim.Text = tanulo.Cim;
-                        uiTextBoxKeresztNev.Text = tanulo.Keresztnev;
-                        uiTextBoxKor.Text = tanulo.Kor;
-                        uiTextBoxVezetekNev.Text = tanulo.Vezeteknev;
-                        x++;
+                        AddNyelvekForm(nyelv.Nev, nyelv.Szint, nyelv.SectionName);
                     }
-                    else
-                    {
-                        AddForm(tanulo.Vezeteknev, tanulo.Keresztnev, tanulo.Kor, tanulo.Cim);
-                    }
-                }*/
+                }
             }
         }
 
@@ -460,7 +456,7 @@ namespace CSFlowDocumentTry1
                 }
             }
             NyelvSorszam++;
-            SectionSorszam++;
+            //SectionSorszam++;
 
         }
         
