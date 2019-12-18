@@ -12,5 +12,7 @@ namespace CSFlowDocumentTanulo
         public string Cim { get; set; }
         public string Kor { get; set; }
         public string Keresztnev { get; set; }
+        public List<Nyelv> NyelvList { get; set; }
+        public List<Vegzettseg> VegzettsegList { get; set; }
     }
 }

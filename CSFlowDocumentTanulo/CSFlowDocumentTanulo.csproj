@@ -96,8 +96,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Nyelv.cs" />
+    <Compile Include="SerializeMethods.cs" />
     <Compile Include="Tanulo.cs" />
     <Compile Include="TanuloKontener.cs" />
+    <Compile Include="Vegzettseg.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

@@ -32,11 +32,15 @@ namespace CSFlowDocumentTry1
 
         public string APPSETTING_SQLCONNECTIONSTRING = ConfigurationManager.AppSettings["sqlConnectionString"];
         public Dictionary<string, Tanulo> TanuloDictionary = new Dictionary<string, Tanulo>();
+        public List<Nyelv> NyelvList = new List<Nyelv>();
         public TanuloKontener tanuloKontener = new TanuloKontener()
         {
             TanuloLista = new List<Tanulo>()
         };
-        public int i = 1;
+        public int SectionSorszam = 1;
+        public int NyelvSorszam = 1;
+
+        SerializeMethods SerializeMethods = new SerializeMethods();
 
         public MainWindow()
         {
@@ -54,17 +58,20 @@ namespace CSFlowDocumentTry1
         private void ButtonAction(object subject, RoutedEventArgs e)
         {
             tanuloKontener.TanuloLista.Clear();
-            
+            /*
             Tanulo tanulo = new Tanulo()
             {
                 Vezeteknev = uiTextBoxVezetekNev.Text.ToString(),
                 Keresztnev = uiTextBoxKeresztNev.Text.ToString(),
                 Kor = uiTextBoxKor.Text.ToString(),
-                Cim = uiTextBoxCim.Text.ToString()
+                Cim = uiTextBoxCim.Text.ToString(),
+                NyelvList = new List<Nyelv>()
             };
 
             tanuloKontener.TanuloLista.Add(tanulo);
-            
+
+            List<Nyelv> nyelvList = new List<Nyelv>();
+            */
             foreach (var block in uiFlowDocument.Blocks)
             {
                 foreach (var dictionary in TanuloDictionary)
@@ -83,7 +90,29 @@ namespace CSFlowDocumentTry1
                                 if (element.GetType().Name.Equals("WrapPanel"))
                                 {
                                     WrapPanel wrapPanel = (WrapPanel)element;
-                                    foreach(var elem in wrapPanel.Children)
+                                    foreach (Nyelv nyelv in dictionary.Value.NyelvList)
+                                    {
+
+                                        if (wrapPanel.Name.Equals(nyelv.WrapPanelSorszam))
+                                        {
+                                            foreach (var elem in wrapPanel.Children)
+                                            {
+                                                if (elem.GetType().Name.Equals("TextBox"))
+                                                {
+                                                    TextBox uiTextBox = (TextBox)elem;
+                                                    if (uiTextBox.Name.Equals("uiTextBoxNyelv"))
+                                                    {
+                                                        nyelv.Nev = uiTextBox.Text;
+                                                    }
+                                                    else if (uiTextBox.Name.Equals("uiTextBoxSzint"))
+                                                    {
+                                                        nyelv.Szint = uiTextBox.Text;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    foreach (var elem in wrapPanel.Children)
                                     {
                                         if (elem.GetType().Name.Equals("TextBox"))
                                         {
@@ -106,6 +135,7 @@ namespace CSFlowDocumentTry1
                                             }
                                         }
                                     }
+                                    
                                 }
                             }
                         }
@@ -117,7 +147,7 @@ namespace CSFlowDocumentTry1
                 tanuloKontener.TanuloLista.Add(dictionary.Value);
             }
 
-            uiTextBlock.Text = serialize(tanuloKontener, typeof(TanuloKontener));
+            uiTextBlock.Text = SerializeMethods.serialize(tanuloKontener, typeof(TanuloKontener));
 
             //UploadTanuloKontener(tanuloKontener);
             //UploadKontenerTanuloAssociation(tanuloKontener);
@@ -149,10 +179,10 @@ namespace CSFlowDocumentTry1
             tanuloKontener.TanuloLista.Clear();
 
             string xml = uiTextBlock.Text;
-            TanuloKontener kontenerUj = deserialize(xml);
+            TanuloKontener kontenerUj = SerializeMethods.Deserialize(xml);
             int x = 0;
             if (kontenerUj != null)
-            {
+            {/*
                 foreach (var tanulo in kontenerUj.TanuloLista)
                 {
                     if (x == 0)
@@ -167,7 +197,7 @@ namespace CSFlowDocumentTry1
                     {
                         AddForm(tanulo.Vezeteknev, tanulo.Keresztnev, tanulo.Kor, tanulo.Cim);
                     }
-                }
+                }*/
             }
         }
 
@@ -279,7 +309,7 @@ namespace CSFlowDocumentTry1
             Section sectionFromCode = new Section()
             {
                 Background = new SolidColorBrush(Color.FromRgb(248, 248, 255)),
-                Name = "section" + i
+                Name = "section" + SectionSorszam
             };
 
             Button uiTorlesButton = new Button()
@@ -290,9 +320,27 @@ namespace CSFlowDocumentTry1
             };
 
             uiTorlesButton.Click += deleteButton;
+            
+            Button uiAddNyelvButton = new Button()
+            {
+                Width = 100,
+                Height = 25,
+                Content = "Nyelv +",
+                Margin = new Thickness()
+                    {
+                        Top = 12,
+                        Left = 25
+                    },
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Tag = sectionFromCode.Name
+            };
+
+            uiAddNyelvButton.Click += AddNyelv;
+
 
             uiMainWrapPanel.Children.Add(uiInnerWrapPanel1);
             uiMainWrapPanel.Children.Add(uiInnerWrapPanel2);
+            uiMainWrapPanel.Children.Add(uiAddNyelvButton);
             uiMainWrapPanel.Children.Add(uiTorlesButton);
 
 
@@ -300,25 +348,122 @@ namespace CSFlowDocumentTry1
             uiFlowDocument.Blocks.Add(sectionFromCode);
 
 
-            TanuloDictionary.Add(sectionFromCode.Name, new Tanulo());
+            TanuloDictionary.Add(sectionFromCode.Name, new Tanulo() {
+                    NyelvList = new List<Nyelv>(),
+                    VegzettsegList = new List<Vegzettseg>()
+                });
 
-            i++;
+            SectionSorszam++;
+        }
+
+        public void AddNyelv(object subject, RoutedEventArgs e)
+        {
+            var clickedButton = subject as Button;
+            string sectionName = clickedButton.Tag.ToString();
+
+            AddNyelvekForm("","", sectionName);
+        }
+
+        public void AddNyelvekForm(string nev, string szint, string sectionName)
+        {
+
+            WrapPanel uiInnerWrapPanel1 = new WrapPanel()
+            {
+                Orientation = Orientation.Horizontal,
+                Margin = new Thickness()
+                {
+                    Top = 12,
+                    Left = 25
+                },
+                Background = new SolidColorBrush(Color.FromRgb(220, 220, 255)),
+                Name = "nyelvWrapPanel" + NyelvSorszam
+            };
+
+            uiInnerWrapPanel1.Children.Add(
+                new Label()
+                {
+                    Content = "Nyelv: ",
+                    Width = 100
+                });
+
+            uiInnerWrapPanel1.Children.Add(
+                new TextBox()
+                {
+                    Name = "uiTextBoxNyelv",
+                    Width = 250,
+                    Height = 25,
+                    Text = nev
+                });
+
+            uiInnerWrapPanel1.Children.Add(
+                new Label()
+                {
+                    Content = "Szint: ",
+                    Width = 100
+                });
+
+            uiInnerWrapPanel1.Children.Add(
+                new TextBox()
+                {
+                    Name = "uiTextBoxSzint",
+                    Width = 250,
+                    Height = 25,
+                    Text = szint
+                });
+            
+
+            Button uiTorlesButton = new Button()
+            {
+                Width = 150,
+                Content = "Nyelv törlése",
+                Tag = uiInnerWrapPanel1.Name + "," + sectionName,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Margin = new Thickness()
+                {
+                    Top = 12,
+                    Left = 25
+                },
+            };
+
+            uiTorlesButton.Click += deleteNyelv;
+
+            foreach (var block in uiFlowDocument.Blocks)
+            {
+                if (block.Name.Equals(sectionName))
+                {
+                    Section sectionBlock = (Section)block;
+                    BlockUIContainer uiContainmer = (BlockUIContainer)sectionBlock.Blocks.FirstBlock;
+                    WrapPanel uiMainWrapPanel = (WrapPanel)uiContainmer.Child;
+
+                    uiInnerWrapPanel1.Children.Add(uiTorlesButton);
+                    uiMainWrapPanel.Children.Add(uiInnerWrapPanel1);
+
+                    Nyelv nyelv = new Nyelv()
+                    {
+                        SectionName = sectionName,
+                        WrapPanelSorszam = "nyelvWrapPanel" + NyelvSorszam,
+                    };
+
+                    NyelvList.Add(new Nyelv()
+                    {
+                        SectionName = sectionName,
+                        WrapPanelSorszam = "nyelvWrapPanel" + NyelvSorszam,
+                    });
+
+                    foreach(var dictionary in TanuloDictionary)
+                    {
+                        if (dictionary.Key.Equals(nyelv.SectionName))
+                        {
+                            dictionary.Value.NyelvList.Add(nyelv);
+                        }
+                    }
+                }
+            }
+            NyelvSorszam++;
+            SectionSorszam++;
+
         }
         
-        public TanuloKontener deserialize(string xml)
-        {
-            if (!xml.Equals("") && !xml.Equals(null))
-            {
-                TanuloKontener result = null;
-                XmlSerializer serializer = new XmlSerializer(typeof(TanuloKontener));
-                using (TextReader reader = new StringReader(xml))
-                {
-                    result = (TanuloKontener)serializer.Deserialize(reader);
-                }
-                return result;
-            }
-            return null;
-        }
 
         public void UploadTanuloKontener(TanuloKontener kontener)
         {
@@ -344,7 +489,7 @@ namespace CSFlowDocumentTry1
                         });
             }
 
-            string xml = serialize(kontener, typeof(TanuloKontener));
+            string xml = SerializeMethods.serialize(kontener, typeof(TanuloKontener));
             string GUID = setByNamesResponse.Ac4yObject.GUID;
         }
 
@@ -422,23 +567,54 @@ namespace CSFlowDocumentTry1
             
         }
 
-        public string serialize(Object taroltEljaras, Type anyType)
-        {
-            XmlSerializer serializer = new XmlSerializer(anyType);
 
-            var xml = "";
-            
-            using (var writer = new StringWriter())
+        private void deleteNyelv(object subject, RoutedEventArgs e)
+        {
+            var clickedButton = subject as Button;
+            string wrapName = clickedButton.Tag.ToString().Substring(0, clickedButton.Tag.ToString().IndexOf(","));
+            string sectionName = clickedButton.Tag.ToString().Substring(clickedButton.Tag.ToString().IndexOf(",")+1);
+
+            foreach (var block in uiFlowDocument.Blocks)
             {
-                using (XmlWriter xmlWriter = XmlWriter.Create(writer))
+                if (block.Name.Equals(sectionName))
                 {
-                    serializer.Serialize(writer, taroltEljaras);
-                    xml = writer.ToString(); // Your XML
+                    Section sectionBlock = (Section)block;
+                    BlockUIContainer uiContainmer = (BlockUIContainer)sectionBlock.Blocks.FirstBlock;
+                    WrapPanel uiMainWrapPanel = (WrapPanel)uiContainmer.Child;
+                    UIElementCollection uiInnerWrapPanels = uiMainWrapPanel.Children;
+                    foreach (var uiInnerWrapPanel in uiInnerWrapPanels)
+                    {
+                        
+                        if (uiInnerWrapPanel.GetType().Name.Equals("WrapPanel"))
+                        {
+                            WrapPanel wrapPanel = (WrapPanel)uiInnerWrapPanel;
+                            if (wrapPanel.Name.Equals(wrapName))
+                            {
+                                uiMainWrapPanel.Children.Remove(wrapPanel);
+                                break;
+                            }
+                        }
+                        
+                    }
+                }
+                
+            }
+
+            foreach(var dictionary in TanuloDictionary)
+            {
+                if (dictionary.Key.Equals(sectionName))
+                {
+                    Nyelv torolNyelv = null;
+                    foreach(Nyelv nyelv in dictionary.Value.NyelvList)
+                    {
+                        if (nyelv.WrapPanelSorszam.Equals(wrapName))
+                        {
+                            torolNyelv = nyelv;
+                        }
+                    }
+                    dictionary.Value.NyelvList.Remove(torolNyelv);
                 }
             }
-            //System.IO.File.WriteAllText(path, xml);
-            
-            return xml;
 
         }
 
