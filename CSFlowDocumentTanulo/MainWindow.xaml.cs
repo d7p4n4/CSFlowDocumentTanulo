@@ -2,6 +2,8 @@
 using CSAc4yObjectObjectService.Association;
 using CSAc4yObjectObjectService.Object;
 using CSFlowDocumentTanulo;
+using Modul.Final.Class;
+using Modul.PersistentService.Class;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -149,7 +151,7 @@ namespace CSFlowDocumentTry1
 
             uiTextBlock.Text = SerializeMethods.serialize(tanuloKontener, typeof(TanuloKontener));
 
-            //UploadTanuloKontener(tanuloKontener);
+            UploadTanuloKontener(tanuloKontener);
             //UploadKontenerTanuloAssociation(tanuloKontener);
 
             /*
@@ -464,6 +466,7 @@ namespace CSFlowDocumentTry1
         public void UploadTanuloKontener(TanuloKontener kontener)
         {
             SqlConnection sqlConnection = new SqlConnection(APPSETTING_SQLCONNECTIONSTRING);
+            Ac4yXMLObjectPersistentService ac4YXMLObjectPersistentService = new Ac4yXMLObjectPersistentService();
 
             sqlConnection.Open();
 
@@ -483,10 +486,45 @@ namespace CSFlowDocumentTry1
                             TemplateName = "tanuló",
                             Name = tanulo.Vezeteknev + "." + tanulo.Keresztnev,
                         });
+
+                string tanuloXml = SerializeMethods.serialize(tanulo, typeof(Tanulo));
+                string tanuloGuid = setByNamesResponseTanulo.Ac4yObject.GUID;
+
+                ac4YXMLObjectPersistentService.Save(new Ac4yXMLObject()
+                {
+                    serialization = tanuloXml,
+                    GUID = tanuloGuid
+                });
+
+                foreach(Nyelv nyelv in tanulo.NyelvList)
+                {
+                    SetByNamesResponse setByNamesResponseNyelv =
+                        new Ac4yObjectObjectService(sqlConnection).SetByNames(
+                            new SetByNamesRequest()
+                            {
+                                TemplateName = "nyelv",
+                                Name = nyelv.Nev + "." + nyelv.Szint,
+                            });
+
+                    string nyelvXml = SerializeMethods.serialize(nyelv, typeof(Nyelv));
+                    string nyelvGuid = setByNamesResponseNyelv.Ac4yObject.GUID;
+
+                    ac4YXMLObjectPersistentService.Save(new Ac4yXMLObject()
+                    {
+                        serialization = tanuloXml,
+                        GUID = tanuloGuid
+                    });
+
+                }
             }
 
             string xml = SerializeMethods.serialize(kontener, typeof(TanuloKontener));
-            string GUID = setByNamesResponse.Ac4yObject.GUID;
+            string guid = setByNamesResponse.Ac4yObject.GUID;
+            ac4YXMLObjectPersistentService.Save(new Ac4yXMLObject()
+            {
+                serialization = xml,
+                GUID = guid
+            });
         }
 
         public void UploadKontenerTanuloAssociation(TanuloKontener kontener)
