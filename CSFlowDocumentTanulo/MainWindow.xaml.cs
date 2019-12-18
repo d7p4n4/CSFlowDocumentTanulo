@@ -119,8 +119,8 @@ namespace CSFlowDocumentTry1
 
             uiTextBlock.Text = serialize(tanuloKontener, typeof(TanuloKontener));
 
-            UploadTanuloKontener(tanuloKontener);
-            UploadKontenerTanuloAssociation(tanuloKontener);
+            //UploadTanuloKontener(tanuloKontener);
+            //UploadKontenerTanuloAssociation(tanuloKontener);
 
             /*
             uiTextBoxName.Text = "";
@@ -132,6 +132,8 @@ namespace CSFlowDocumentTry1
     
         public void XmlBetoltes(object subject, RoutedEventArgs e)
         {
+            OpenXML();
+
             List<Block> flowDocumentBlockList = uiFlowDocument.Blocks.ToList();
             uiFlowDocument.Blocks.Clear();
 
@@ -149,20 +151,22 @@ namespace CSFlowDocumentTry1
             string xml = uiTextBlock.Text;
             TanuloKontener kontenerUj = deserialize(xml);
             int x = 0;
-
-            foreach(var tanulo in kontenerUj.TanuloLista)
+            if (kontenerUj != null)
             {
-                if (x == 0)
+                foreach (var tanulo in kontenerUj.TanuloLista)
                 {
-                    uiTextBoxCim.Text = tanulo.Cim;
-                    uiTextBoxKeresztNev.Text = tanulo.Keresztnev;
-                    uiTextBoxKor.Text = tanulo.Kor;
-                    uiTextBoxVezetekNev.Text = tanulo.Vezeteknev;
-                    x++;
-                }
-                else
-                {
-                    AddForm(tanulo.Vezeteknev, tanulo.Keresztnev, tanulo.Kor, tanulo.Cim);
+                    if (x == 0)
+                    {
+                        uiTextBoxCim.Text = tanulo.Cim;
+                        uiTextBoxKeresztNev.Text = tanulo.Keresztnev;
+                        uiTextBoxKor.Text = tanulo.Kor;
+                        uiTextBoxVezetekNev.Text = tanulo.Vezeteknev;
+                        x++;
+                    }
+                    else
+                    {
+                        AddForm(tanulo.Vezeteknev, tanulo.Keresztnev, tanulo.Kor, tanulo.Cim);
+                    }
                 }
             }
         }
@@ -303,13 +307,17 @@ namespace CSFlowDocumentTry1
         
         public TanuloKontener deserialize(string xml)
         {
-            TanuloKontener result = null;
-            XmlSerializer serializer = new XmlSerializer(typeof(TanuloKontener));
-            using (TextReader reader = new StringReader(xml))
+            if (!xml.Equals("") && !xml.Equals(null))
             {
-                result = (TanuloKontener)serializer.Deserialize(reader);
+                TanuloKontener result = null;
+                XmlSerializer serializer = new XmlSerializer(typeof(TanuloKontener));
+                using (TextReader reader = new StringReader(xml))
+                {
+                    result = (TanuloKontener)serializer.Deserialize(reader);
+                }
+                return result;
             }
-            return result;
+            return null;
         }
 
         public void UploadTanuloKontener(TanuloKontener kontener)
@@ -355,6 +363,54 @@ namespace CSFlowDocumentTry1
                             TargetTemplateName = "tanuló",
                             TargetName = tanulo.Vezeteknev + "." + tanulo.Keresztnev
                         });
+            }
+        }
+
+        public void OpenXML()
+        {
+            var fileContent = string.Empty;
+            var filePath = string.Empty;
+
+            using (System.Windows.Forms.OpenFileDialog openFileDialog = new System.Windows.Forms.OpenFileDialog())
+            {
+                openFileDialog.InitialDirectory = "c:\\";
+                openFileDialog.Filter = "xml files (*.xml)|*.xml|All files (*.*)|*.*";
+                openFileDialog.FilterIndex = 2;
+                openFileDialog.RestoreDirectory = true;
+
+                if (openFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    //Get the path of specified file
+                    filePath = openFileDialog.FileName;
+
+                    //Read the contents of the file into a stream
+                    var fileStream = openFileDialog.OpenFile();
+
+                    using (StreamReader reader = new StreamReader(fileStream))
+                    {
+                        fileContent = reader.ReadToEnd();
+                        uiTextBlock.Text = fileContent;
+                    }
+                }
+            }
+        }
+
+        private void SaveXml(object subject, RoutedEventArgs e)
+        {
+            using (System.Windows.Forms.SaveFileDialog saveFileDialog = new System.Windows.Forms.SaveFileDialog())
+            {
+                // Displays a SaveFileDialog so the user can save the Image
+                // assigned to Button2.
+
+                saveFileDialog.InitialDirectory = "c:\\";
+                saveFileDialog.Filter = "xml files (*.xml)|*.xml|All files (*.*)|*.*";
+                saveFileDialog.Title = "Save an Image File";
+                saveFileDialog.ShowDialog();
+                
+                if(saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    File.WriteAllText(saveFileDialog.FileName, uiTextBlock.Text);
+                }
             }
         }
 

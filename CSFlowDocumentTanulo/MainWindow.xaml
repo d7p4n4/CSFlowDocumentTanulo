@@ -39,6 +39,9 @@
             
         </TextBox>
         <Button Click="ButtonAction" Width="150" Height="25" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0 0 50 100">XML kiírása</Button>
+
+        <Button Click="SaveXml" Width="150" Height="25" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0 0 50 75">XML mentése</Button>
+
         <Button Click="XmlBetoltes" Width="150" Height="25" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="50">XML betöltése</Button>
 
     </Grid>
