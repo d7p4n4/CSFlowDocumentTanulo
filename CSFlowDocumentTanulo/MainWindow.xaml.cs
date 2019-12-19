@@ -152,7 +152,7 @@ namespace CSFlowDocumentTry1
             uiTextBlock.Text = SerializeMethods.serialize(tanuloKontener, typeof(TanuloKontener));
 
             UploadTanuloKontener(tanuloKontener);
-            //UploadKontenerTanuloAssociation(tanuloKontener);
+            UploadKontenerTanuloAssociation(tanuloKontener);
 
             /*
             uiTextBoxName.Text = "";
@@ -511,8 +511,8 @@ namespace CSFlowDocumentTry1
 
                     ac4YXMLObjectPersistentService.Save(new Ac4yXMLObject()
                     {
-                        serialization = tanuloXml,
-                        GUID = tanuloGuid
+                        serialization = nyelvXml,
+                        GUID = nyelvGuid
                     });
 
                 }
@@ -530,6 +530,7 @@ namespace CSFlowDocumentTry1
         public void UploadKontenerTanuloAssociation(TanuloKontener kontener)
         {
             SqlConnection sqlConnection = new SqlConnection(APPSETTING_SQLCONNECTIONSTRING);
+            sqlConnection.Open();
 
             foreach (var tanulo in kontener.TanuloLista) {
                 Ac4yAssociationObjectService.SetByNamesResponse setByNamesResponse =
@@ -542,6 +543,20 @@ namespace CSFlowDocumentTry1
                             TargetTemplateName = "tanuló",
                             TargetName = tanulo.Vezeteknev + "." + tanulo.Keresztnev
                         });
+
+                foreach(Nyelv nyelv in tanulo.NyelvList)
+                {
+                    Ac4yAssociationObjectService.SetByNamesResponse setByNamesResponseNyelv =
+                    new Ac4yAssociationObjectService(sqlConnection).SetByNames(
+                        new Ac4yAssociationObjectService.SetByNamesRequest()
+                        {
+                            AssociationPathName = "tanuló.nyelv",
+                            OriginTemplateName = "tanuló",
+                            OriginName = tanulo.Vezeteknev + "." + tanulo.Keresztnev,
+                            TargetTemplateName = "nyelv",
+                            TargetName = nyelv.Nev + "." + nyelv.Szint
+                        });
+                }
             }
         }
 
