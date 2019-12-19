@@ -470,31 +470,8 @@ namespace CSFlowDocumentTry1
 
             sqlConnection.Open();
 
-            SetByNamesResponse setByNamesResponse =
-                new Ac4yObjectObjectService(sqlConnection).SetByNames(
-                    new SetByNamesRequest() {
-                        TemplateName = "tanuló konténer",
-                        Name = "teszt"
-                    });
-
             foreach(var tanulo in kontener.TanuloLista)
             {
-                SetByNamesResponse setByNamesResponseTanulo =
-                    new Ac4yObjectObjectService(sqlConnection).SetByNames(
-                        new SetByNamesRequest()
-                        {
-                            TemplateName = "tanuló",
-                            Name = tanulo.Vezeteknev + "." + tanulo.Keresztnev,
-                        });
-
-                string tanuloXml = SerializeMethods.serialize(tanulo, typeof(Tanulo));
-                string tanuloGuid = setByNamesResponseTanulo.Ac4yObject.GUID;
-
-                ac4YXMLObjectPersistentService.Save(new Ac4yXMLObject()
-                {
-                    serialization = tanuloXml,
-                    GUID = tanuloGuid
-                });
 
                 foreach(Nyelv nyelv in tanulo.NyelvList)
                 {
@@ -516,7 +493,36 @@ namespace CSFlowDocumentTry1
                     });
 
                 }
+
+                tanulo.NyelvList.Clear();
+
+                SetByNamesResponse setByNamesResponseTanulo =
+                    new Ac4yObjectObjectService(sqlConnection).SetByNames(
+                        new SetByNamesRequest()
+                        {
+                            TemplateName = "tanuló",
+                            Name = tanulo.Vezeteknev + "." + tanulo.Keresztnev,
+                        });
+
+                string tanuloXml = SerializeMethods.serialize(tanulo, typeof(Tanulo));
+                string tanuloGuid = setByNamesResponseTanulo.Ac4yObject.GUID;
+
+                ac4YXMLObjectPersistentService.Save(new Ac4yXMLObject()
+                {
+                    serialization = tanuloXml,
+                    GUID = tanuloGuid
+                });
             }
+
+            kontener.TanuloLista.Clear();
+
+            SetByNamesResponse setByNamesResponse =
+                new Ac4yObjectObjectService(sqlConnection).SetByNames(
+                    new SetByNamesRequest()
+                    {
+                        TemplateName = "tanuló konténer",
+                        Name = "associationTeszt"
+                    });
 
             string xml = SerializeMethods.serialize(kontener, typeof(TanuloKontener));
             string guid = setByNamesResponse.Ac4yObject.GUID;
@@ -539,7 +545,7 @@ namespace CSFlowDocumentTry1
                         {
                             AssociationPathName = "tanuló konténer.tanuló",
                             OriginTemplateName = "tanuló konténer",
-                            OriginName = "teszt",
+                            OriginName = "associationTeszt",
                             TargetTemplateName = "tanuló",
                             TargetName = tanulo.Vezeteknev + "." + tanulo.Keresztnev
                         });
