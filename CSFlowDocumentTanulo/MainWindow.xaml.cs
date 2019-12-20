@@ -42,6 +42,7 @@ namespace CSFlowDocumentTry1
         };
         public int SectionSorszam = 1;
         public int NyelvSorszam = 1;
+        public int VegzettsegSorszam = 1;
 
         SerializeMethods SerializeMethods = new SerializeMethods();
 
@@ -111,23 +112,55 @@ namespace CSFlowDocumentTry1
                                 if (element.GetType().Name.Equals("WrapPanel"))
                                 {
                                     WrapPanel wrapPanel = (WrapPanel)element;
-                                    foreach (Nyelv nyelv in dictionary.Value.NyelvList)
+                                    if (wrapPanel.Name.StartsWith("nyelv"))
                                     {
-
-                                        if (wrapPanel.Name.Equals(nyelv.WrapPanelSorszam))
+                                        foreach (Nyelv nyelv in dictionary.Value.NyelvList)
                                         {
-                                            foreach (var elem in wrapPanel.Children)
+
+                                            if (wrapPanel.Name.Equals(nyelv.WrapPanelSorszam))
                                             {
-                                                if (elem.GetType().Name.Equals("TextBox"))
+                                                foreach (var elem in wrapPanel.Children)
                                                 {
-                                                    TextBox uiTextBox = (TextBox)elem;
-                                                    if (uiTextBox.Name.Equals("uiTextBoxNyelv"))
+                                                    if (elem.GetType().Name.Equals("TextBox"))
                                                     {
-                                                        nyelv.Nev = uiTextBox.Text;
+                                                        TextBox uiTextBox = (TextBox)elem;
+                                                        if (uiTextBox.Name.Equals("uiTextBoxNev"))
+                                                        {
+                                                            nyelv.Nev = uiTextBox.Text;
+                                                        }
+                                                        else if (uiTextBox.Name.Equals("uiTextBoxSzint"))
+                                                        {
+                                                            nyelv.Szint = uiTextBox.Text;
+                                                        }
                                                     }
-                                                    else if (uiTextBox.Name.Equals("uiTextBoxSzint"))
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        foreach (Vegzettseg vegzettseg in dictionary.Value.VegzettsegList)
+                                        {
+
+                                            if (wrapPanel.Name.Equals(vegzettseg.WrapPanelSorszam))
+                                            {
+                                                foreach (var elem in wrapPanel.Children)
+                                                {
+                                                    if (elem.GetType().Name.Equals("TextBox"))
                                                     {
-                                                        nyelv.Szint = uiTextBox.Text;
+                                                        TextBox uiTextBox = (TextBox)elem;
+                                                        if (uiTextBox.Name.Equals("uiTextBoxIskolaNeve"))
+                                                        {
+                                                            vegzettseg.IskolaNeve = uiTextBox.Text;
+                                                        }
+                                                        else if (uiTextBox.Name.Equals("uiTextBoxSzint"))
+                                                        {
+                                                            vegzettseg.Szint = uiTextBox.Text;
+                                                        }
+                                                        else if (uiTextBox.Name.Equals("uiTextBoxSzak"))
+                                                        {
+                                                            vegzettseg.Szak = uiTextBox.Text;
+                                                        }
                                                     }
                                                 }
                                             }
@@ -175,6 +208,7 @@ namespace CSFlowDocumentTry1
 
             SectionSorszam = 1;
             NyelvSorszam = 1;
+            VegzettsegSorszam = 1;
 
             TanuloDictionary.Clear();
             tanuloKontener.TanuloLista.Clear();
@@ -190,6 +224,10 @@ namespace CSFlowDocumentTry1
                     foreach(Nyelv nyelv in tanulo.NyelvList)
                     {
                         AddNyelvekFormDinamically(nyelv.Nev, nyelv.Szint, nyelv.SectionName);
+                    }
+                    foreach(Vegzettseg vegzettseg in tanulo.VegzettsegList)
+                    {
+                        AddVegzettsegFormDinamically(vegzettseg.IskolaNeve, vegzettseg.Szint, vegzettseg.Szak, vegzettseg.SectionName);
                     }
                 }
             }
@@ -209,6 +247,7 @@ namespace CSFlowDocumentTry1
             Ac4yClass ac4yClass = (Ac4yClass)SerializeMethods.Deserialize(xml, typeof(Ac4yClass));
 
             string name = ac4yClass.Name.ToLower() + "WrapPanel" + NyelvSorszam;
+            string content = "";
 
             WrapPanel uiInnerWrapPanel1 = new WrapPanel()
             {
@@ -224,6 +263,15 @@ namespace CSFlowDocumentTry1
 
             foreach (Ac4yProperty property in ac4yClass.PropertyList)
             {
+                switch (property.Name)
+                {
+                    case "Nev":
+                        content = nev;
+                        break;
+                    case "Szint":
+                        content = szint;
+                        break;
+                }
                 if (!property.Multiple)
                 {
                     if (property.WidgetType.Equals("TextBox"))
@@ -241,7 +289,7 @@ namespace CSFlowDocumentTry1
                                 Name = "uiTextBox" + property.Name,
                                 Width = 250,
                                 Height = 25,
-                                Text = nev
+                                Text = content
                             });
                     }
                 }
@@ -299,6 +347,155 @@ namespace CSFlowDocumentTry1
 
         }
 
+        public void AddVegzettsegDinamically(object subject, RoutedEventArgs e)
+        {
+            Button button = subject as Button;
+            string sectionName = button.Tag.ToString();
+
+            AddVegzettsegFormDinamically("", "", "", sectionName);
+        }
+
+        public void AddVegzettsegFormDinamically(string nev, string szint, string szak, string sectionName)
+        {
+            string xml = File.ReadAllText("c:\\Server\\Vegzettseg@Ac4yClass.xml");
+            Ac4yClass ac4yClass = (Ac4yClass)SerializeMethods.Deserialize(xml, typeof(Ac4yClass));
+
+            string name = ac4yClass.Name.ToLower() + "WrapPanel" + NyelvSorszam;
+
+            WrapPanel uiInnerWrapPanel1 = new WrapPanel()
+            {
+                Orientation = Orientation.Horizontal,
+                Margin = new Thickness()
+                {
+                    Top = 12,
+                    Left = 25
+                },
+                Background = new SolidColorBrush(Color.FromRgb(220, 220, 255)),
+                Name = name
+            };
+
+            foreach (Ac4yProperty property in ac4yClass.PropertyList)
+            {
+                if (!property.Multiple)
+                {
+                    if (property.WidgetType.Equals("TextBox"))
+                    {
+                        uiInnerWrapPanel1.Children.Add(
+                            new Label()
+                            {
+                                Content = property.Name + ": ",
+                                Width = 100
+                            });
+
+                        uiInnerWrapPanel1.Children.Add(
+                            new TextBox()
+                            {
+                                Name = "uiTextBox" + property.Name,
+                                Width = 250,
+                                Height = 25,
+                                Text = nev
+                            });
+                    }
+                }
+            }
+            Button uiTorlesButton = new Button()
+            {
+                Width = 150,
+                Content = ac4yClass.Name + " törlése",
+                Tag = uiInnerWrapPanel1.Name + "," + sectionName,
+                HorizontalAlignment = HorizontalAlignment.Left,
+                Margin = new Thickness()
+                {
+                    Top = 12,
+                    Left = 25
+                },
+            };
+
+            uiTorlesButton.Click += deleteVegzettseg;
+
+            foreach (var block in uiFlowDocument.Blocks)
+            {
+                if (block.Name.Equals(sectionName))
+                {
+                    Section sectionBlock = (Section)block;
+                    BlockUIContainer uiContainmer = (BlockUIContainer)sectionBlock.Blocks.FirstBlock;
+                    WrapPanel uiMainWrapPanel = (WrapPanel)uiContainmer.Child;
+
+                    uiInnerWrapPanel1.Children.Add(uiTorlesButton);
+                    uiMainWrapPanel.Children.Add(uiInnerWrapPanel1);
+
+                    Vegzettseg vegzettseg = new Vegzettseg()
+                    {
+                        SectionName = sectionName,
+                        WrapPanelSorszam = name,
+                    };
+
+
+                    foreach (var dictionary in TanuloDictionary)
+                    {
+                        if (dictionary.Key.Equals(vegzettseg.SectionName))
+                        {
+                            dictionary.Value.VegzettsegList.Add(vegzettseg);
+                        }
+                    }
+                }
+            }
+            VegzettsegSorszam++;
+            //SectionSorszam++;
+
+        }
+
+        public void deleteVegzettseg(object subject, RoutedEventArgs e)
+        {
+
+            var clickedButton = subject as Button;
+            string wrapName = clickedButton.Tag.ToString().Substring(0, clickedButton.Tag.ToString().IndexOf(","));
+            string sectionName = clickedButton.Tag.ToString().Substring(clickedButton.Tag.ToString().IndexOf(",") + 1);
+
+            foreach (var block in uiFlowDocument.Blocks)
+            {
+                if (block.Name.Equals(sectionName))
+                {
+                    Section sectionBlock = (Section)block;
+                    BlockUIContainer uiContainmer = (BlockUIContainer)sectionBlock.Blocks.FirstBlock;
+                    WrapPanel uiMainWrapPanel = (WrapPanel)uiContainmer.Child;
+                    UIElementCollection uiInnerWrapPanels = uiMainWrapPanel.Children;
+                    foreach (var uiInnerWrapPanel in uiInnerWrapPanels)
+                    {
+
+                        if (uiInnerWrapPanel.GetType().Name.Equals("WrapPanel"))
+                        {
+                            WrapPanel wrapPanel = (WrapPanel)uiInnerWrapPanel;
+                            if (wrapPanel.Name.Equals(wrapName))
+                            {
+                                uiMainWrapPanel.Children.Remove(wrapPanel);
+                                break;
+                            }
+                        }
+
+                    }
+                }
+
+            }
+
+            foreach (var dictionary in TanuloDictionary)
+            {
+                if (dictionary.Key.Equals(sectionName))
+                {
+                    Vegzettseg torolVegettseg = null;
+                    foreach (Vegzettseg vegzettseg in dictionary.Value.VegzettsegList)
+                    {
+                        if (vegzettseg.WrapPanelSorszam.Equals(wrapName))
+                        {
+                            torolVegettseg = vegzettseg;
+                        }
+                    }
+                    dictionary.Value.VegzettsegList.Remove(torolVegettseg);
+                }
+            }
+
+        }
+
         public void UploadTanuloKontener(TanuloKontener kontener)
         {
             SqlConnection sqlConnection = new SqlConnection(APPSETTING_SQLCONNECTIONSTRING);
@@ -331,6 +528,29 @@ namespace CSFlowDocumentTry1
                 }
 
                 tanulo.NyelvList.Clear();
+
+                foreach (Vegzettseg vegzettseg in tanulo.VegzettsegList)
+                {
+                    SetByNamesResponse setByNamesResponseNyelv =
+                        new Ac4yObjectObjectService(sqlConnection).SetByNames(
+                            new SetByNamesRequest()
+                            {
+                                TemplateName = "végzettség",
+                                Name = vegzettseg.IskolaNeve + "." + vegzettseg.Szint,
+                            });
+
+                    string vegzettsegXml = SerializeMethods.serialize(vegzettseg, typeof(Vegzettseg));
+                    string vegzettsegGuid = setByNamesResponseNyelv.Ac4yObject.GUID;
+
+                    ac4YXMLObjectPersistentService.Save(new Ac4yXMLObject()
+                    {
+                        serialization = vegzettsegXml,
+                        GUID = vegzettsegGuid
+                    });
+
+                }
+
+                tanulo.VegzettsegList.Clear();
 
                 SetByNamesResponse setByNamesResponseTanulo =
                     new Ac4yObjectObjectService(sqlConnection).SetByNames(
@@ -397,6 +617,20 @@ namespace CSFlowDocumentTry1
                             OriginName = tanulo.Vezeteknev + "." + tanulo.Keresztnev,
                             TargetTemplateName = "nyelv",
                             TargetName = nyelv.Nev + "." + nyelv.Szint
+                        });
+                }
+
+                foreach (Vegzettseg vegzettseg in tanulo.VegzettsegList)
+                {
+                    Ac4yAssociationObjectService.SetByNamesResponse setByNamesResponseNyelv =
+                    new Ac4yAssociationObjectService(sqlConnection).SetByNames(
+                        new Ac4yAssociationObjectService.SetByNamesRequest()
+                        {
+                            AssociationPathName = "tanuló.végzettség",
+                            OriginTemplateName = "tanuló",
+                            OriginName = tanulo.Vezeteknev + "." + tanulo.Keresztnev,
+                            TargetTemplateName = "végzettség",
+                            TargetName = vegzettseg.IskolaNeve + "." + vegzettseg.Szint
                         });
                 }
             }
@@ -485,9 +719,14 @@ namespace CSFlowDocumentTry1
                         HorizontalAlignment = HorizontalAlignment.Left,
                         Tag = sectionFromCode.Name
                     };
-
-                    uiAddNyelvButton.Click += AddNyelvDinamically;
-
+                    if (property.Name.Equals("NyelvList"))
+                    {
+                        uiAddNyelvButton.Click += AddNyelvDinamically;
+                    }
+                    else
+                    {
+                        uiAddNyelvButton.Click += AddVegzettsegDinamically;
+                    }
                     uiInnerWrapPanel1.Children.Add(uiAddNyelvButton);
                 }
             }
