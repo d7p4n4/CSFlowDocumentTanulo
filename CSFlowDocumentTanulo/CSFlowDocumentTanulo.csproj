@@ -38,29 +38,37 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="CSAc4yClassFW">
-      <HintPath>..\..\..\..\..\Library\LPCSharp\CSAc4yClassFW.dll</HintPath>
+    <Reference Include="CSAc4yClassFW, Version=1.2019.1219.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\library\LPCsharp\CSAc4yClassFW.dll</HintPath>
     </Reference>
-    <Reference Include="CSAc4yFW">
-      <HintPath>..\..\..\..\..\Library\LPCSharp\CSAc4yFW.dll</HintPath>
+    <Reference Include="CSAc4yFW, Version=1.2019.1206.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\library\LPCsharp\CSAc4yFW.dll</HintPath>
     </Reference>
-    <Reference Include="CSAc4yObjectDBCapFW">
-      <HintPath>..\..\..\..\..\Library\LPCSharp\CSAc4yObjectDBCapFW.dll</HintPath>
+    <Reference Include="CSAc4yObjectDBCapFW, Version=1.2019.1213.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\library\LPCsharp\CSAc4yObjectDBCapFW.dll</HintPath>
     </Reference>
-    <Reference Include="CSAc4yObjectObjectServiceFW">
-      <HintPath>..\..\..\..\..\Library\LPCSharp\CSAc4yObjectObjectServiceFW.dll</HintPath>
+    <Reference Include="CSAc4yObjectObjectServiceFW, Version=1.2019.1213.3, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\library\LPCsharp\CSAc4yObjectObjectServiceFW.dll</HintPath>
     </Reference>
-    <Reference Include="CSAc4yObjectServiceWF">
-      <HintPath>..\..\..\..\..\Library\LPCSharp\CSAc4yObjectServiceWF.dll</HintPath>
+    <Reference Include="CSAc4yObjectServiceWF, Version=1.2019.1217.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\library\LPCsharp\CSAc4yObjectServiceWF.dll</HintPath>
     </Reference>
-    <Reference Include="CSAc4yServiceFW">
-      <HintPath>..\..\..\..\..\Library\LPCSharp\CSAc4yServiceFW.dll</HintPath>
+    <Reference Include="CSAc4yServiceFW, Version=1.2019.1213.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\library\LPCsharp\CSAc4yServiceFW.dll</HintPath>
     </Reference>
-    <Reference Include="CSAc4yXMLObjectFW">
-      <HintPath>..\..\..\..\..\Library\LPCSharp\CSAc4yXMLObjectFW.dll</HintPath>
+    <Reference Include="CSAc4yXMLObjectFW, Version=1.2019.1216.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\library\LPCsharp\CSAc4yXMLObjectFW.dll</HintPath>
     </Reference>
-    <Reference Include="CSAc4yXMLObjectPersistentFW">
-      <HintPath>..\..\..\..\..\Library\LPCSharp\CSAc4yXMLObjectPersistentFW.dll</HintPath>
+    <Reference Include="CSAc4yXMLObjectPersistentFW, Version=1.2019.1218.1, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\library\LPCsharp\CSAc4yXMLObjectPersistentFW.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.4.0\lib\net45\EntityFramework.dll</HintPath>

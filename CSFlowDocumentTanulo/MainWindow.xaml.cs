@@ -51,13 +51,10 @@ namespace CSFlowDocumentTry1
 
             // uiListViewFlowDocument.Items.Add(uiListViewItem);
             // uiListViewFlowDocument.Items.Add(uiListViewItem);
-        }
+            
 
-        private void AddTextBox(object subject, RoutedEventArgs e)
-        {
-            AddForm("", "", "", "");
         }
-
+        
         private void ButtonAction(object subject, RoutedEventArgs e)
         {
             tanuloKontener.TanuloLista.Clear();
@@ -120,11 +117,11 @@ namespace CSFlowDocumentTry1
                                         if (elem.GetType().Name.Equals("TextBox"))
                                         {
                                             TextBox uiTextBox = (TextBox)elem;
-                                            if (uiTextBox.Name.Equals("uiTextBoxVezetekNev"))
+                                            if (uiTextBox.Name.Equals("uiTextBoxVezeteknev"))
                                             {
                                                 dictionary.Value.Vezeteknev = uiTextBox.Text;
                                             }
-                                            else if (uiTextBox.Name.Equals("uiTextBoxKeresztNev"))
+                                            else if (uiTextBox.Name.Equals("uiTextBoxKeresztnev"))
                                             {
                                                 dictionary.Value.Keresztnev = uiTextBox.Text;
                                             }
@@ -152,8 +149,8 @@ namespace CSFlowDocumentTry1
 
             uiTextBlock.Text = SerializeMethods.serialize(tanuloKontener, typeof(TanuloKontener));
 
-            UploadTanuloKontener(tanuloKontener);
-            UploadKontenerTanuloAssociation(tanuloKontener);
+            //UploadTanuloKontener(tanuloKontener);
+            //UploadKontenerTanuloAssociation(tanuloKontener);
 
             /*
             uiTextBoxName.Text = "";
@@ -191,180 +188,29 @@ namespace CSFlowDocumentTry1
             {
                 foreach (var tanulo in kontenerUj.TanuloLista)
                 {
-                    AddForm(tanulo.Vezeteknev, tanulo.Keresztnev, tanulo.Kor, tanulo.Cim);
+                    DinamycalyAddTanuloForm(tanulo.Vezeteknev, tanulo.Keresztnev, tanulo.Kor, tanulo.Cim);
                     foreach(Nyelv nyelv in tanulo.NyelvList)
                     {
-                        AddNyelvekForm(nyelv.Nev, nyelv.Szint, nyelv.SectionName);
+                        AddNyelvekFormDinamically(nyelv.Nev, nyelv.Szint, nyelv.SectionName);
                     }
                 }
             }
         }
 
-        public void AddForm(string vNev, string kNev, string kor, string cim)
+        public void AddNyelvDinamically(object subject, RoutedEventArgs e)
         {
-            WrapPanel uiMainWrapPanel = new WrapPanel()
-            {
-                Orientation = Orientation.Vertical,
-                Width = 750,
-                HorizontalAlignment = HorizontalAlignment.Center
-            };
+            Button button = subject as Button;
+            string sectionName = button.Tag.ToString();
 
-            WrapPanel uiInnerWrapPanel1 = new WrapPanel()
-            {
-                Orientation = Orientation.Horizontal,
-                Margin = new Thickness()
-                {
-                    Top = 12,
-                    Left = 25
-                }
-            };
-
-            uiInnerWrapPanel1.Children.Add(
-                new Label()
-                {
-                    Content = "Vezetéknév: ",
-                    Width = 100
-                });
-
-            uiInnerWrapPanel1.Children.Add(
-                new TextBox()
-                {
-                    Name = "uiTextBoxVezetekNev",
-                    Width = 250,
-                    Height = 25,
-                    Text = vNev
-                });
-
-            uiInnerWrapPanel1.Children.Add(
-                new Label()
-                {
-                    Content = "Keresztnév: ",
-                    Width = 100
-                });
-
-            uiInnerWrapPanel1.Children.Add(
-                new TextBox()
-                {
-                    Name = "uiTextBoxKeresztNev",
-                    Width = 250,
-                    Height = 25,
-                    Text = kNev
-                });
-
-            WrapPanel uiInnerWrapPanel2 = new WrapPanel()
-            {
-                Orientation = Orientation.Horizontal,
-                Margin = new Thickness()
-                {
-                    Top = 12,
-                    Left = 25
-                }
-            };
-
-            uiInnerWrapPanel2.Children.Add(
-                new Label()
-                {
-                    Content = "Kor: ",
-                    Width = 100
-                });
-
-            uiInnerWrapPanel2.Children.Add(
-                new TextBox()
-                {
-                    Name = "uiTextBoxKor",
-                    Width = 250,
-                    Height = 25,
-                    Text = kor
-                });
-
-            uiInnerWrapPanel2.Children.Add(
-                new Label()
-                {
-                    Content = "Cím: ",
-                    Width = 100
-                });
-
-            uiInnerWrapPanel2.Children.Add(
-                new TextBox()
-                {
-                    Name = "uiTextBoxCim",
-                    Width = 250,
-                    Height = 25,
-                    Text = cim
-                });
-            BlockUIContainer uiContainer = new BlockUIContainer()
-            {
-                Child = uiMainWrapPanel,
-                BorderBrush = new SolidColorBrush(Color.FromRgb(0, 0, 0)),
-                BorderThickness = new Thickness()
-                {
-                    Bottom = 1,
-                    Left = 1,
-                    Top = 1,
-                    Right = 1
-                }
-
-            };
-            Section sectionFromCode = new Section()
-            {
-                Background = new SolidColorBrush(Color.FromRgb(248, 248, 255)),
-                Name = "section" + SectionSorszam
-            };
-
-            Button uiTorlesButton = new Button()
-            {
-                Width = 200,
-                Content = "Törlés",
-                Tag = sectionFromCode.Name
-            };
-
-            uiTorlesButton.Click += deleteButton;
-            
-            Button uiAddNyelvButton = new Button()
-            {
-                Width = 100,
-                Height = 25,
-                Content = "Nyelv +",
-                Margin = new Thickness()
-                    {
-                        Top = 12,
-                        Left = 25
-                    },
-                HorizontalAlignment = HorizontalAlignment.Left,
-                Tag = sectionFromCode.Name
-            };
-
-            uiAddNyelvButton.Click += AddNyelv;
-
-
-            uiMainWrapPanel.Children.Add(uiInnerWrapPanel1);
-            uiMainWrapPanel.Children.Add(uiInnerWrapPanel2);
-            uiMainWrapPanel.Children.Add(uiAddNyelvButton);
-            uiMainWrapPanel.Children.Add(uiTorlesButton);
-
-
-            sectionFromCode.Blocks.Add(uiContainer);
-            uiFlowDocument.Blocks.Add(sectionFromCode);
-
-
-            TanuloDictionary.Add(sectionFromCode.Name, new Tanulo() {
-                    NyelvList = new List<Nyelv>(),
-                    VegzettsegList = new List<Vegzettseg>()
-                });
-
-            SectionSorszam++;
+            AddNyelvekFormDinamically("", "", sectionName);
         }
-
-        public void AddNyelv(object subject, RoutedEventArgs e)
+        
+        public void AddNyelvekFormDinamically(string nev, string szint, string sectionName)
         {
-            var clickedButton = subject as Button;
-            string sectionName = clickedButton.Tag.ToString();
+            string xml = File.ReadAllText("c:\\Server\\Nyelv@Ac4yClass.xml");
+            Ac4yClass ac4yClass = (Ac4yClass)SerializeMethods.Deserialize(xml, typeof(Ac4yClass));
 
-            AddNyelvekForm("","", sectionName);
-        }
-
-        public void AddNyelvekForm(string nev, string szint, string sectionName)
-        {
+            string name = ac4yClass.Name.ToLower() + "WrapPanel" + NyelvSorszam;
 
             WrapPanel uiInnerWrapPanel1 = new WrapPanel()
             {
@@ -375,46 +221,37 @@ namespace CSFlowDocumentTry1
                     Left = 25
                 },
                 Background = new SolidColorBrush(Color.FromRgb(220, 220, 255)),
-                Name = "nyelvWrapPanel" + NyelvSorszam
+                Name = name
             };
 
-            uiInnerWrapPanel1.Children.Add(
-                new Label()
+            foreach (Ac4yProperty property in ac4yClass.PropertyList)
+            {
+                if (!property.Multiple)
                 {
-                    Content = "Nyelv: ",
-                    Width = 100
-                });
+                    if (property.WidgetType.Equals("TextBox"))
+                    {
+                        uiInnerWrapPanel1.Children.Add(
+                            new Label()
+                            {
+                                Content = property.Name + ": ",
+                                Width = 100
+                            });
 
-            uiInnerWrapPanel1.Children.Add(
-                new TextBox()
-                {
-                    Name = "uiTextBoxNyelv",
-                    Width = 250,
-                    Height = 25,
-                    Text = nev
-                });
-
-            uiInnerWrapPanel1.Children.Add(
-                new Label()
-                {
-                    Content = "Szint: ",
-                    Width = 100
-                });
-
-            uiInnerWrapPanel1.Children.Add(
-                new TextBox()
-                {
-                    Name = "uiTextBoxSzint",
-                    Width = 250,
-                    Height = 25,
-                    Text = szint
-                });
-            
-
+                        uiInnerWrapPanel1.Children.Add(
+                            new TextBox()
+                            {
+                                Name = "uiTextBox" + property.Name,
+                                Width = 250,
+                                Height = 25,
+                                Text = nev
+                            });
+                    }
+                }
+            }
             Button uiTorlesButton = new Button()
             {
                 Width = 150,
-                Content = "Nyelv törlése",
+                Content = ac4yClass.Name + " törlése",
                 Tag = uiInnerWrapPanel1.Name + "," + sectionName,
                 HorizontalAlignment = HorizontalAlignment.Left,
                 Margin = new Thickness()
@@ -440,16 +277,16 @@ namespace CSFlowDocumentTry1
                     Nyelv nyelv = new Nyelv()
                     {
                         SectionName = sectionName,
-                        WrapPanelSorszam = "nyelvWrapPanel" + NyelvSorszam,
+                        WrapPanelSorszam = name,
                     };
 
                     NyelvList.Add(new Nyelv()
                     {
                         SectionName = sectionName,
-                        WrapPanelSorszam = "nyelvWrapPanel" + NyelvSorszam,
+                        WrapPanelSorszam = name,
                     });
 
-                    foreach(var dictionary in TanuloDictionary)
+                    foreach (var dictionary in TanuloDictionary)
                     {
                         if (dictionary.Key.Equals(nyelv.SectionName))
                         {
@@ -461,8 +298,8 @@ namespace CSFlowDocumentTry1
             NyelvSorszam++;
             //SectionSorszam++;
 
+
         }
-        
 
         public void UploadTanuloKontener(TanuloKontener kontener)
         {
@@ -569,13 +406,15 @@ namespace CSFlowDocumentTry1
 
         private void DinamiclyAddTextBox(object subject, RoutedEventArgs e)
         {
-            DinamycalyAddTanuloForm();
+            DinamycalyAddTanuloForm("","","","");
         }
 
-        public void DinamycalyAddTanuloForm()
+        public void DinamycalyAddTanuloForm(string vezetek, string kereszt, string kor, string cim)
         {
             string xml = File.ReadAllText("c:\\Server\\Tanulo@Ac4yClass.xml");
             Ac4yClass tanulo = (Ac4yClass)SerializeMethods.Deserialize(xml, typeof(Ac4yClass));
+
+            string content = "";
 
             WrapPanel uiInnerWrapPanel1 = new WrapPanel()
             {
@@ -587,58 +426,116 @@ namespace CSFlowDocumentTry1
                 }
             };
 
-            foreach(Ac4yProperty property in tanulo.PropertyList)
+            Section sectionFromCode = new Section()
             {
-                if (!property.Embedded)
+                Background = new SolidColorBrush(Color.FromRgb(248, 248, 255)),
+                Name = "section" + SectionSorszam
+            };
+
+            foreach (Ac4yProperty property in tanulo.PropertyList)
+            {
+                switch (property.Name)
+                {
+                    case "Keresztnev":
+                        content = kereszt;
+                        break;
+                    case "Vezeteknev":
+                        content = vezetek;
+                        break;
+                    case "Kor":
+                        content = kor;
+                        break;
+                    case "Cim":
+                        content = cim;
+                        break;
+                }
+                
+                if (!property.Multiple)
                 {
                     if (property.WidgetType.Equals("TextBox"))
                     {
                         uiInnerWrapPanel1.Children.Add(
                                 new Label()
                                 {
-                                    Content = property.Name + ": "
+                                    Content = property.Name + ": ",
+                                    Width = 150
                                 }
                             );
                         uiInnerWrapPanel1.Children.Add(
                                 new TextBox()
                                 {
-                                    Name = "uiTextBox" + property.Name
+                                    Name = "uiTextBox" + property.Name,
+                                    Width = 200,
+                                    Height = 25,
+                                    Text = content
                                 }
                             );
                     }
                 }
-                BlockUIContainer uiContainer = new BlockUIContainer()
+                else
                 {
-                    Child = uiInnerWrapPanel1,
-                    BorderBrush = new SolidColorBrush(Color.FromRgb(0, 0, 0)),
-                    BorderThickness = new Thickness()
+                    Button uiAddNyelvButton = new Button()
                     {
-                        Bottom = 1,
-                        Left = 1,
-                        Top = 1,
-                        Right = 1
-                    }
+                        Width = 100,
+                        Height = 25,
+                        Content = property.Class + " +",
+                        Margin = new Thickness()
+                        {
+                            Top = 12,
+                            Left = 25
+                        },
+                        HorizontalAlignment = HorizontalAlignment.Left,
+                        Tag = sectionFromCode.Name
+                    };
 
-                };
+                    uiAddNyelvButton.Click += AddNyelvDinamically;
 
-                Section sectionFromCode = new Section()
-                {
-                    Background = new SolidColorBrush(Color.FromRgb(248, 248, 255)),
-                    Name = "section" + SectionSorszam
-                };
-
-                sectionFromCode.Blocks.Add(uiContainer);
-                uiFlowDocument.Blocks.Add(sectionFromCode);
-
-
-                TanuloDictionary.Add(sectionFromCode.Name, new Tanulo()
-                {
-                    NyelvList = new List<Nyelv>(),
-                    VegzettsegList = new List<Vegzettseg>()
-                });
-
-                SectionSorszam++;
+                    uiInnerWrapPanel1.Children.Add(uiAddNyelvButton);
+                }
             }
+            Button uiTorlesButton = new Button()
+            {
+                Width = 200,
+                Height = 25,
+                Margin = new Thickness()
+                {
+                    Left = 250
+                },
+                Content = "Törlés",
+                Tag = sectionFromCode.Name
+            };
+
+            uiTorlesButton.Click += deleteButton;
+
+            uiInnerWrapPanel1.Children.Add(uiTorlesButton);
+
+            BlockUIContainer uiContainer = new BlockUIContainer()
+            {
+                Child = uiInnerWrapPanel1,
+                BorderBrush = new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                BorderThickness = new Thickness()
+                {
+                    Bottom = 1,
+                    Left = 1,
+                    Top = 1,
+                    Right = 1
+                }
+
+            };
+
+            uiTorlesButton.Click += deleteButton;
+
+            sectionFromCode.Blocks.Add(uiContainer);
+            uiFlowDocument.Blocks.Add(sectionFromCode);
+
+            TanuloDictionary.Add(sectionFromCode.Name, new Tanulo()
+            {
+                NyelvList = new List<Nyelv>(),
+                VegzettsegList = new List<Vegzettseg>()
+            });
+
+            SectionSorszam++;
+            
         }
 
         public void OpenXML()

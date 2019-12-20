@@ -37,7 +37,6 @@
                 -->
             </FlowDocument>
         </FlowDocumentScrollViewer>
-        <Button Click="AddTextBox" Width="200" HorizontalAlignment="Center" Height="25" Margin="0 125 0 0">Új Tanuló űrlap</Button>
         <Button Click="DinamiclyAddTextBox" Width="200" HorizontalAlignment="Left" Height="25" Margin="50 125 0 0">Új, dinamikus Tanuló űrlap</Button>
 
         <TextBox x:Name="uiTextBlock" ScrollViewer.VerticalScrollBarVisibility="Visible" Background="AliceBlue" Width="600" HorizontalAlignment="Left" Height="150" Margin="50 325 0 12">
