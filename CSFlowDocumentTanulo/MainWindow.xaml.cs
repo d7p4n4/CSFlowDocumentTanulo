@@ -147,8 +147,8 @@ namespace CSFlowDocumentTry1
 
             uiTextBlock.Text = SerializeMethods.serialize(tanuloKontener, typeof(TanuloKontener));
 
-            //UploadTanuloKontener(tanuloKontener);
-            //UploadKontenerTanuloAssociation(tanuloKontener);
+            UploadTanuloKontener(tanuloKontener);
+            UploadKontenerTanuloAssociation(tanuloKontener);
 
             /*
             uiTextBoxName.Text = "";
@@ -357,7 +357,7 @@ namespace CSFlowDocumentTry1
                     new SetByNamesRequest()
                     {
                         TemplateName = "tanuló konténer",
-                        Name = "associationTeszt"
+                        Name = "Teszt3"
                     });
 
             string xml = SerializeMethods.serialize(kontener, typeof(TanuloKontener));
@@ -381,7 +381,7 @@ namespace CSFlowDocumentTry1
                         {
                             AssociationPathName = "tanuló konténer.tanuló",
                             OriginTemplateName = "tanuló konténer",
-                            OriginName = "associationTeszt",
+                            OriginName = "Teszt3",
                             TargetTemplateName = "tanuló",
                             TargetName = tanulo.Vezeteknev + "." + tanulo.Keresztnev
                         });
