@@ -38,6 +38,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CSAc4yClassFW">
+      <HintPath>..\..\..\..\..\Library\LPCSharp\CSAc4yClassFW.dll</HintPath>
+    </Reference>
     <Reference Include="CSAc4yFW">
       <HintPath>..\..\..\..\..\Library\LPCSharp\CSAc4yFW.dll</HintPath>
     </Reference>

@@ -27,6 +27,21 @@ namespace CSFlowDocumentTanulo
             return null;
         }
 
+        public Object Deserialize(string xml, Type anytype)
+        {
+            if (!xml.Equals("") && !xml.Equals(null))
+            {
+                Object result = null;
+                XmlSerializer serializer = new XmlSerializer(anytype);
+                using (TextReader reader = new StringReader(xml))
+                {
+                    result = serializer.Deserialize(reader);
+                }
+                return result;
+            }
+            return null;
+        }
+
         public string serialize(Object taroltEljaras, Type anyType)
         {
             XmlSerializer serializer = new XmlSerializer(anyType);

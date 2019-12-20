@@ -1,4 +1,5 @@
 ﻿
+using CSAc4yClass.Class;
 using CSAc4yObjectObjectService.Association;
 using CSAc4yObjectObjectService.Object;
 using CSFlowDocumentTanulo;
@@ -48,8 +49,8 @@ namespace CSFlowDocumentTry1
         {
             InitializeComponent();
 
-           // uiListViewFlowDocument.Items.Add(uiListViewItem);
-           // uiListViewFlowDocument.Items.Add(uiListViewItem);
+            // uiListViewFlowDocument.Items.Add(uiListViewItem);
+            // uiListViewFlowDocument.Items.Add(uiListViewItem);
         }
 
         private void AddTextBox(object subject, RoutedEventArgs e)
@@ -563,6 +564,80 @@ namespace CSFlowDocumentTry1
                             TargetName = nyelv.Nev + "." + nyelv.Szint
                         });
                 }
+            }
+        }
+
+        private void DinamiclyAddTextBox(object subject, RoutedEventArgs e)
+        {
+            DinamycalyAddTanuloForm();
+        }
+
+        public void DinamycalyAddTanuloForm()
+        {
+            string xml = File.ReadAllText("c:\\Server\\Tanulo@Ac4yClass.xml");
+            Ac4yClass tanulo = (Ac4yClass)SerializeMethods.Deserialize(xml, typeof(Ac4yClass));
+
+            WrapPanel uiInnerWrapPanel1 = new WrapPanel()
+            {
+                Orientation = Orientation.Horizontal,
+                Margin = new Thickness()
+                {
+                    Top = 12,
+                    Left = 25
+                }
+            };
+
+            foreach(Ac4yProperty property in tanulo.PropertyList)
+            {
+                if (!property.Embedded)
+                {
+                    if (property.WidgetType.Equals("TextBox"))
+                    {
+                        uiInnerWrapPanel1.Children.Add(
+                                new Label()
+                                {
+                                    Content = property.Name + ": "
+                                }
+                            );
+                        uiInnerWrapPanel1.Children.Add(
+                                new TextBox()
+                                {
+                                    Name = "uiTextBox" + property.Name
+                                }
+                            );
+                    }
+                }
+                BlockUIContainer uiContainer = new BlockUIContainer()
+                {
+                    Child = uiInnerWrapPanel1,
+                    BorderBrush = new SolidColorBrush(Color.FromRgb(0, 0, 0)),
+                    BorderThickness = new Thickness()
+                    {
+                        Bottom = 1,
+                        Left = 1,
+                        Top = 1,
+                        Right = 1
+                    }
+
+                };
+
+                Section sectionFromCode = new Section()
+                {
+                    Background = new SolidColorBrush(Color.FromRgb(248, 248, 255)),
+                    Name = "section" + SectionSorszam
+                };
+
+                sectionFromCode.Blocks.Add(uiContainer);
+                uiFlowDocument.Blocks.Add(sectionFromCode);
+
+
+                TanuloDictionary.Add(sectionFromCode.Name, new Tanulo()
+                {
+                    NyelvList = new List<Nyelv>(),
+                    VegzettsegList = new List<Vegzettseg>()
+                });
+
+                SectionSorszam++;
             }
         }
 
