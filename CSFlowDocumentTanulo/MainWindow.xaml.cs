@@ -87,6 +87,27 @@ namespace CSFlowDocumentTry1
                             UIElementCollection uiWrapPanelElements = uiMainWrapPanel.Children;
                             foreach(var element in uiWrapPanelElements)
                             {
+                                    if (element.GetType().Name.Equals("TextBox"))
+                                    {
+                                        TextBox uiTextBox = (TextBox)element;
+                                        if (uiTextBox.Name.Equals("uiTextBoxVezeteknev"))
+                                        {
+                                            dictionary.Value.Vezeteknev = uiTextBox.Text;
+                                        }
+                                        else if (uiTextBox.Name.Equals("uiTextBoxKeresztnev"))
+                                        {
+                                            dictionary.Value.Keresztnev = uiTextBox.Text;
+                                        }
+                                        else if (uiTextBox.Name.Equals("uiTextBoxKor"))
+                                        {
+                                            dictionary.Value.Kor = uiTextBox.Text;
+                                        }
+                                        else if (uiTextBox.Name.Equals("uiTextBoxCim"))
+                                        {
+                                            dictionary.Value.Cim = uiTextBox.Text;
+                                        }
+                                    }
+                                
                                 if (element.GetType().Name.Equals("WrapPanel"))
                                 {
                                     WrapPanel wrapPanel = (WrapPanel)element;
@@ -109,29 +130,6 @@ namespace CSFlowDocumentTry1
                                                         nyelv.Szint = uiTextBox.Text;
                                                     }
                                                 }
-                                            }
-                                        }
-                                    }
-                                    foreach (var elem in wrapPanel.Children)
-                                    {
-                                        if (elem.GetType().Name.Equals("TextBox"))
-                                        {
-                                            TextBox uiTextBox = (TextBox)elem;
-                                            if (uiTextBox.Name.Equals("uiTextBoxVezeteknev"))
-                                            {
-                                                dictionary.Value.Vezeteknev = uiTextBox.Text;
-                                            }
-                                            else if (uiTextBox.Name.Equals("uiTextBoxKeresztnev"))
-                                            {
-                                                dictionary.Value.Keresztnev = uiTextBox.Text;
-                                            }
-                                            else if (uiTextBox.Name.Equals("uiTextBoxKor"))
-                                            {
-                                                dictionary.Value.Kor = uiTextBox.Text;
-                                            }
-                                            else if (uiTextBox.Name.Equals("uiTextBoxCim"))
-                                            {
-                                                dictionary.Value.Cim = uiTextBox.Text;
                                             }
                                         }
                                     }
