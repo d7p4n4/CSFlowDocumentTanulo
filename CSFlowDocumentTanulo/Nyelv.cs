@@ -12,5 +12,10 @@ namespace CSFlowDocumentTanulo
         public string WrapPanelSorszam { get; set; }
         public string Nev { get; set; }
         public string Szint { get; set; }
+
+        public static List<string> GetPropertyList()
+        {
+            return new List<string>() { "Nev", "Szint" };
+        }
     }
 }
