@@ -35,7 +35,8 @@ namespace CSFlowDocumentTry1
 
         public string APPSETTING_SQLCONNECTIONSTRING = ConfigurationManager.AppSettings["sqlConnectionString"];
         public Dictionary<string, Tanulo> TanuloDictionary = new Dictionary<string, Tanulo>();
-        public List<Nyelv> NyelvList = new List<Nyelv>();
+        public List<NyelvIdentificator> NyelvList = new List<NyelvIdentificator>();
+        public List<VegzettsegIdentificator> VegzettsegList = new List<VegzettsegIdentificator>();
         public TanuloKontener tanuloKontener = new TanuloKontener()
         {
             TanuloLista = new List<Tanulo>()
@@ -114,10 +115,9 @@ namespace CSFlowDocumentTry1
                                     WrapPanel wrapPanel = (WrapPanel)element;
                                     if (wrapPanel.Name.StartsWith("nyelv"))
                                     {
-                                        foreach (Nyelv nyelv in dictionary.Value.NyelvList)
+                                        foreach (NyelvIdentificator nyelvIndicator in NyelvList)
                                         {
-
-                                            if (wrapPanel.Name.Equals(nyelv.WrapPanelSorszam))
+                                            if (wrapPanel.Name.Equals(nyelvIndicator.WrapPanelNev) && sectionBlock.Name.Equals(nyelvIndicator.SectionNev))
                                             {
                                                 foreach (var elem in wrapPanel.Children)
                                                 {
@@ -126,11 +126,11 @@ namespace CSFlowDocumentTry1
                                                         TextBox uiTextBox = (TextBox)elem;
                                                         if (uiTextBox.Name.Equals("uiTextBoxNev"))
                                                         {
-                                                            nyelv.Nev = uiTextBox.Text;
+                                                            nyelvIndicator.Nyelv.Nev = uiTextBox.Text;
                                                         }
                                                         else if (uiTextBox.Name.Equals("uiTextBoxSzint"))
                                                         {
-                                                            nyelv.Szint = uiTextBox.Text;
+                                                            nyelvIndicator.Nyelv.Szint = uiTextBox.Text;
                                                         }
                                                     }
                                                 }
@@ -139,10 +139,10 @@ namespace CSFlowDocumentTry1
                                     }
                                     else
                                     {
-                                        foreach (Vegzettseg vegzettseg in dictionary.Value.VegzettsegList)
+                                        foreach (VegzettsegIdentificator vegzettsegIdentificator in VegzettsegList)
                                         {
 
-                                            if (wrapPanel.Name.Equals(vegzettseg.WrapPanelSorszam))
+                                            if (wrapPanel.Name.Equals(vegzettsegIdentificator.WrapPanelNev) && sectionBlock.Name.Equals(vegzettsegIdentificator.SectionNev))
                                             {
                                                 foreach (var elem in wrapPanel.Children)
                                                 {
@@ -151,15 +151,15 @@ namespace CSFlowDocumentTry1
                                                         TextBox uiTextBox = (TextBox)elem;
                                                         if (uiTextBox.Name.Equals("uiTextBoxIskolaNeve"))
                                                         {
-                                                            vegzettseg.IskolaNeve = uiTextBox.Text;
+                                                            vegzettsegIdentificator.Vegzettseg.IskolaNeve = uiTextBox.Text;
                                                         }
                                                         else if (uiTextBox.Name.Equals("uiTextBoxSzint"))
                                                         {
-                                                            vegzettseg.Szint = uiTextBox.Text;
+                                                            vegzettsegIdentificator.Vegzettseg.Szint = uiTextBox.Text;
                                                         }
                                                         else if (uiTextBox.Name.Equals("uiTextBoxSzak"))
                                                         {
-                                                            vegzettseg.Szak = uiTextBox.Text;
+                                                            vegzettsegIdentificator.Vegzettseg.Szak = uiTextBox.Text;
                                                         }
                                                     }
                                                 }
@@ -173,6 +173,25 @@ namespace CSFlowDocumentTry1
                     }
                 }
             }
+            foreach(var dictionary in TanuloDictionary)
+            {
+                dictionary.Value.NyelvList.Clear();
+                dictionary.Value.VegzettsegList.Clear();
+                foreach (NyelvIdentificator nyelvIndicator in NyelvList)
+                {
+                    if (dictionary.Key.Equals(nyelvIndicator.SectionNev))
+                    {
+                        dictionary.Value.NyelvList.Add(nyelvIndicator.Nyelv);
+                    }
+                }
+                foreach(VegzettsegIdentificator vegzettsegIdentificator in VegzettsegList)
+                {
+                    if (dictionary.Key.Equals(vegzettsegIdentificator.SectionNev))
+                    {
+                        dictionary.Value.VegzettsegList.Add(vegzettsegIdentificator.Vegzettseg);
+                    }
+                }
+            }
             foreach (var dictionary in TanuloDictionary)
             {
                 tanuloKontener.TanuloLista.Add(dictionary.Value);
@@ -180,8 +199,8 @@ namespace CSFlowDocumentTry1
 
             uiTextBlock.Text = SerializeMethods.serialize(tanuloKontener, typeof(TanuloKontener));
 
-            UploadTanuloKontener(tanuloKontener);
-            UploadKontenerTanuloAssociation(tanuloKontener);
+            //UploadTanuloKontener(tanuloKontener);
+            //UploadKontenerTanuloAssociation(tanuloKontener);
 
             /*
             uiTextBoxName.Text = "";
@@ -223,11 +242,11 @@ namespace CSFlowDocumentTry1
                     DinamycalyAddTanuloForm(tanulo.Vezeteknev, tanulo.Keresztnev, tanulo.Kor, tanulo.Cim);
                     foreach(Nyelv nyelv in tanulo.NyelvList)
                     {
-                        AddNyelvekFormDinamically(nyelv.Nev, nyelv.Szint, nyelv.SectionName);
+                        AddNyelvekFormDinamically(nyelv.Nev, nyelv.Szint, "section" + (SectionSorszam - 1));
                     }
                     foreach(Vegzettseg vegzettseg in tanulo.VegzettsegList)
                     {
-                        AddVegzettsegFormDinamically(vegzettseg.IskolaNeve, vegzettseg.Szint, vegzettseg.Szak, vegzettseg.SectionName);
+                        AddVegzettsegFormDinamically(vegzettseg.IskolaNeve, vegzettseg.Szint, vegzettseg.Szak, "section" + (SectionSorszam - 1));
                     }
                 }
             }
@@ -320,25 +339,14 @@ namespace CSFlowDocumentTry1
                     uiInnerWrapPanel1.Children.Add(uiTorlesButton);
                     uiMainWrapPanel.Children.Add(uiInnerWrapPanel1);
 
-                    Nyelv nyelv = new Nyelv()
+                    NyelvIdentificator nyelvIdentificator = new NyelvIdentificator()
                     {
-                        SectionName = sectionName,
-                        WrapPanelSorszam = name,
+                        SectionNev = sectionName,
+                        WrapPanelNev = name,
+                        Nyelv = new Nyelv()
                     };
 
-                    NyelvList.Add(new Nyelv()
-                    {
-                        SectionName = sectionName,
-                        WrapPanelSorszam = name,
-                    });
-
-                    foreach (var dictionary in TanuloDictionary)
-                    {
-                        if (dictionary.Key.Equals(nyelv.SectionName))
-                        {
-                            dictionary.Value.NyelvList.Add(nyelv);
-                        }
-                    }
+                    NyelvList.Add(nyelvIdentificator);
                 }
             }
             NyelvSorszam++;
@@ -424,20 +432,14 @@ namespace CSFlowDocumentTry1
                     uiInnerWrapPanel1.Children.Add(uiTorlesButton);
                     uiMainWrapPanel.Children.Add(uiInnerWrapPanel1);
 
-                    Vegzettseg vegzettseg = new Vegzettseg()
+                    VegzettsegIdentificator vegzettsegIdentificator = new VegzettsegIdentificator()
                     {
-                        SectionName = sectionName,
-                        WrapPanelSorszam = name,
+                        SectionNev = sectionName,
+                        WrapPanelNev = name,
+                        Vegzettseg = new Vegzettseg()
                     };
 
-
-                    foreach (var dictionary in TanuloDictionary)
-                    {
-                        if (dictionary.Key.Equals(vegzettseg.SectionName))
-                        {
-                            dictionary.Value.VegzettsegList.Add(vegzettseg);
-                        }
-                    }
+                    VegzettsegList.Add(vegzettsegIdentificator);
                 }
             }
             VegzettsegSorszam++;
@@ -478,19 +480,12 @@ namespace CSFlowDocumentTry1
 
             }
 
-            foreach (var dictionary in TanuloDictionary)
+            foreach (VegzettsegIdentificator vegzettsegIdentificator in VegzettsegList)
             {
-                if (dictionary.Key.Equals(sectionName))
+                if(vegzettsegIdentificator.SectionNev.Equals(sectionName) && vegzettsegIdentificator.WrapPanelNev.Equals(wrapName))
                 {
-                    Vegzettseg torolVegettseg = null;
-                    foreach (Vegzettseg vegzettseg in dictionary.Value.VegzettsegList)
-                    {
-                        if (vegzettseg.WrapPanelSorszam.Equals(wrapName))
-                        {
-                            torolVegettseg = vegzettseg;
-                        }
-                    }
-                    dictionary.Value.VegzettsegList.Remove(torolVegettseg);
+                    VegzettsegList.Remove(vegzettsegIdentificator);
+                    break;
                 }
             }
 
@@ -862,19 +857,12 @@ namespace CSFlowDocumentTry1
                 
             }
 
-            foreach(var dictionary in TanuloDictionary)
+            foreach(NyelvIdentificator nyelvIdentificator in NyelvList)
             {
-                if (dictionary.Key.Equals(sectionName))
+                if (nyelvIdentificator.SectionNev.Equals(sectionName) && nyelvIdentificator.WrapPanelNev.Equals(wrapName))
                 {
-                    Nyelv torolNyelv = null;
-                    foreach(Nyelv nyelv in dictionary.Value.NyelvList)
-                    {
-                        if (nyelv.WrapPanelSorszam.Equals(wrapName))
-                        {
-                            torolNyelv = nyelv;
-                        }
-                    }
-                    dictionary.Value.NyelvList.Remove(torolNyelv);
+                    NyelvList.Remove(nyelvIdentificator);
+                    break;
                 }
             }
 

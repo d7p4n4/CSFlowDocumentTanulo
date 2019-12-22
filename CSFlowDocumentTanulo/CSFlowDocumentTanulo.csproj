@@ -124,10 +124,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Nyelv.cs" />
+    <Compile Include="NyelvIdentificator.cs" />
     <Compile Include="SerializeMethods.cs" />
     <Compile Include="Tanulo.cs" />
     <Compile Include="TanuloKontener.cs" />
     <Compile Include="Vegzettseg.cs" />
+    <Compile Include="VegzettsegIdentificator.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
